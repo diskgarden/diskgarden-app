@@ -1,0 +1,15 @@
+.DS_Store
+build/
+DerivedData/
+.build/
+.swiftpm/
+*.xcodeproj/
+xcuserdata/
+dist/
+__pycache__/
+
+# Credentials never belong in this repository.
+*.pem
+*.p12
+.env
+.env.*

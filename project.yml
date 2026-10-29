@@ -1,0 +1,159 @@
+name: DiskGarden
+options:
+  bundleIdPrefix: app.diskgarden
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    # Signed by the developer's Apple team (here a free Personal Team) with automatic provisioning: Firebase
+    # needs the keychain-sharing entitlement, which requires a team-signed build with a provisioning profile.
+    DEVELOPMENT_TEAM: 7STSZZ5YCT
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: Apple Development
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    MARKETING_VERSION: "1.0.7"
+    CURRENT_PROJECT_VERSION: "10007"
+
+packages:
+  ScanEngine:
+    path: Packages/ScanEngine
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 12.19.0
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.10.0
+
+targets:
+  DiskGarden:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+        excludes:
+          - GoogleService-Info-Debug.plist # copied over the release config in Debug builds (see below)
+    dependencies:
+      - package: ScanEngine
+        product: ScanEngine
+      - package: Firebase
+        product: FirebaseCrashlytics
+      - package: Firebase
+        product: FirebaseRemoteConfig
+      - package: Sparkle
+        product: Sparkle
+      - target: DiskGardenHelper
+        embed: true
+        codeSign: false # keep the helper's own signature (and its app.diskgarden.DiskGardenHelper identifier)
+        copy:
+          destination: executables
+    entitlements:
+      path: App/DiskGarden.entitlements
+      properties:
+        # Firebase Installations keeps its token in the data-protection keychain (Remote Config, Crashlytics).
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: $(APP_DISPLAY_NAME)
+        CFBundleName: $(APP_DISPLAY_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "© 2026 DiskGarden"
+        NSPrincipalClass: NSApplication
+        NSAppleEventsUsageDescription: DiskGarden asks Finder to open Get Info windows for disks and folders.
+        # Sparkle updates. The appcast is the source of truth for what's available.
+        # 1.0.7 rotates the signing key. Sparkle takes exactly one public key, so the feed is versioned with it:
+        # <=1.0.6 keeps reading appcast.xml (old key, 1.0.7 is its last entry), 1.0.7+ reads appcast-v2.xml (new key).
+        # Never change these two independently: the feed a build reads and the key it validates that feed with.
+        SUFeedURL: https://diskgarden.app/appcast-v2.xml
+        SUPublicEDKey: gNHNYRPxwxUHdBx0L4QMwiEpCxN3rmv9eJv8JDXVZYI=
+        SURequireSignedFeed: true # generate_appcast signs the feed; a tampered appcast is rejected
+        SUVerifyUpdateBeforeExtraction: true # check the archive's EdDSA signature before unpacking (required with signed feeds)
+        # How long an install tolerates a feed it cannot validate before falling back to Sparkle's "safe mode"
+        # (SUAppcastDriver.m:133-176). 3 days instead of Sparkle's 20-day default: this only ever fires if a future
+        # feed is mis-signed or the key is lost, and in that case 20 days of "The update feed is improperly signed"
+        # with no way to ship a fix is the worst outcome. 0 would disable recovery entirely and is not an option --
+        # the value is read from Info.plist only, so it cannot be changed on an installed copy. Safe mode still
+        # requires a valid EdDSA signature or a Developer ID archive from our own team, so the floor is notarization.
+        SUSignedFeedFailureExpirationInterval: 259200
+        # No "check automatically?" prompt: checks are on by default (off in Debug, which would "update" to Release).
+        SUEnableAutomaticChecks: $(SPARKLE_AUTOMATIC)
+        SUAutomaticallyUpdate: $(SPARKLE_AUTOMATIC) # normal updates download in the background and install on quit
+        SUScheduledCheckInterval: 21600 # every 6 hours (frequent releases)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.diskgarden.DiskGarden
+        APP_DISPLAY_NAME: DiskGarden
+        SPARKLE_AUTOMATIC: YES
+        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_APP_SANDBOX: NO
+        COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # One binary instead of Xcode's preview debug dylib: a self-signed identity has no Team ID,
+        # so hardened-runtime library validation would reject the separate dylib.
+        ENABLE_DEBUG_DYLIB: NO
+        # Localizable.xcstrings: the compiler extracts String(localized:) / LocalizedStringKey uses.
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+        # Crashlytics: dSYMs in every configuration so crashes symbolicate; the upload script reads the build.
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+      configs:
+        # A separate debug variant (like Android's applicationIdSuffix): its own bundle ID, name and icon, so it
+        # installs next to the release with its own settings, saved scans, Full Disk Access entry and keychain.
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: app.diskgarden.DiskGarden.debug
+          APP_DISPLAY_NAME: DiskGarden Debug
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIconDebug
+          SPARKLE_AUTOMATIC: NO
+    postBuildScripts:
+      - name: Use the debug Firebase config
+        basedOnDependencyAnalysis: false
+        script: |
+          # Debug builds use App/GoogleService-Info-Debug.plist (a Firebase app registered for the .debug bundle ID)
+          # when it exists; otherwise they share the release config (Firebase warns about the bundle ID).
+          [ "$CONFIGURATION" = "Debug" ] || exit 0
+          [ -f "$SRCROOT/App/GoogleService-Info-Debug.plist" ] || exit 0
+          cp "$SRCROOT/App/GoogleService-Info-Debug.plist" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/GoogleService-Info.plist"
+      - name: Upload dSYMs to Crashlytics
+        basedOnDependencyAnalysis: false
+        script: |
+          # Only when the Firebase config is present (builds without it skip Firebase).
+          if [ ! -f "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist" ]; then
+            echo "No GoogleService-Info.plist: skipping Crashlytics dSYM upload"; exit 0
+          fi
+          RUN="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          # Builds with a separate -clonedSourcePackagesDirPath keep the packages elsewhere.
+          [ -x "$RUN" ] || RUN=$(find "${PROJECT_DIR}/build" -path "*checkouts/firebase-ios-sdk/Crashlytics/run" -print -quit 2>/dev/null)
+          if [ -z "$RUN" ]; then echo "warning: Crashlytics upload script not found; dSYMs not uploaded"; exit 0; fi
+          "$RUN"
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
+
+  DiskGardenHelper:
+    type: tool
+    platform: macOS
+    sources:
+      - path: Helper
+    dependencies:
+      - package: ScanEngine
+        product: ScanEngine
+    settings:
+      base:
+        PRODUCT_NAME: DiskGardenHelper
+        PRODUCT_BUNDLE_IDENTIFIER: app.diskgarden.DiskGardenHelper
+        # A tool has no Info.plist: give its code signature the same reverse-DNS identifier.
+        OTHER_CODE_SIGN_FLAGS: "--identifier app.diskgarden.DiskGardenHelper"
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES

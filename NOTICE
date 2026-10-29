@@ -1,0 +1,48 @@
+DiskGarden
+Copyright 2026 DiskGarden
+
+This product includes software developed by DiskGarden (https://diskgarden.app).
+
+Licensed under the Apache License, Version 2.0; see the LICENSE file in the
+root of this repository, or http://www.apache.org/licenses/LICENSE-2.0.
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+
+The following components are redistributed inside the DiskGarden application
+bundle. Their licences are reproduced in full in docs/THIRD-PARTY-LICENSES.md.
+
+Sparkle -- MIT License
+  Copyright (c) 2006-2013 Andy Matuschak
+  Copyright (c) 2009-2013 Elgato Systems GmbH
+  Copyright (c) 2011-2014 Kornel Lesinski
+  Copyright (c) 2015-2017 Mayur Pawashe
+  https://github.com/sparkle-project/Sparkle
+  Embedded as Contents/Frameworks/Sparkle.framework.
+
+  Sparkle bundles a modified copy of the ed25519 reference implementation:
+    ed25519 -- zlib License
+    Copyright (c) 2015 Orson Peters <orsonpeters@gmail.com>
+
+Firebase Apple SDK (FirebaseCrashlytics, FirebaseRemoteConfig and their
+transitive dependencies) -- Apache License, Version 2.0
+  Copyright Google LLC
+  https://github.com/firebase/firebase-ios-sdk
+  Statically linked into the DiskGarden executable. Includes, under the same
+  licence: GoogleUtilities, GoogleDataTransport, Promises, gRPC (binary
+  distribution), Abseil-C++ (binary distribution), app-check and
+  interop-ios-for-google-sdks.
+
+LevelDB -- BSD 3-Clause License
+  Copyright (c) 2011 The LevelDB Authors
+  https://github.com/firebase/leveldb
+  Statically linked by way of the Firebase Apple SDK.
+
+nanopb -- zlib License
+  Copyright (c) 2011 Petteri Aimonen <jpa at nanopb.mail.kapsi.fi>
+  https://github.com/firebase/nanopb
+  Statically linked by way of the Firebase Apple SDK.
+
+"DiskGarden" is the name of this project. The Apache License, Version 2.0
+grants no trademark rights (section 6); see the License section of the README.

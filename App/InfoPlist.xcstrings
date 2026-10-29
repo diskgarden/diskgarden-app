@@ -1,0 +1,159 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DiskGarden"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DiskGarden"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "NSAppleEventsUsageDescription" : {
+      "comment" : "Privacy - AppleEvents Sending Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يطلب DiskGarden من Finder فتح نوافذ «إظهار المعلومات» للأقراص والمجلدات."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden bittet den Finder, Informationsfenster für Volumes und Ordner zu öffnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DiskGarden asks Finder to open Get Info windows for disks and folders."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden pide al Finder que abra las ventanas de Obtener información de discos y carpetas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden demande au Finder d’ouvrir les fenêtres Lire les informations des disques et des dossiers."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden chiede al Finder di aprire le finestre Ottieni informazioni di dischi e cartelle."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGardenは、ディスクやフォルダの「情報を見る」ウインドウを開くようFinderに依頼します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden은 디스크와 폴더의 정보 가져오기 윈도우를 열도록 Finder에 요청합니다."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden prosi Findera o otwieranie okien Informacje dla dysków i folderów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O DiskGarden pede ao Finder que abra janelas de Obter Informações de discos e pastas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O DiskGarden pede ao Finder que abra janelas de Obter informações de discos e pastas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden просит Finder открывать окна «Свойства» для дисков и папок."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden ber Finder att öppna Visa info-fönster för skivor och mappar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden, diskler ve klasörler için Finder’dan Bilgi Al pencerelerini açmasını ister."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden просить Finder відкривати вікна «Інформація» для дисків і папок."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden yêu cầu Finder mở cửa sổ Lấy thông tin cho ổ đĩa và thư mục."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden 会请求“访达”打开磁盘和文件夹的“显示简介”窗口。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DiskGarden 會請求 Finder 打開磁碟和檔案夾的「取得資訊」視窗。"
+          }
+        }
+      }
+    },
+    "NSHumanReadableCopyright" : {
+      "comment" : "Copyright (human-readable)",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "© 2026 DiskGarden"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    }
+  },
+  "version" : "1.0"
+}
